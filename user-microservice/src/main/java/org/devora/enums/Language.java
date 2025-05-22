@@ -7,9 +7,9 @@ public enum Language {
     EN("English"),
     RU("Russian");
 
-    public final String value;
+    public final String label;
 
-    Language(String value) {
-        this.value = value;
+    Language(String label) {
+        this.label = label;
     }
 }
