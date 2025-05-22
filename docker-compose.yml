@@ -1,0 +1,24 @@
+services:
+  user-db:
+    image: postgres:15
+    container_name: users-db
+    environment:
+      POSTGRES_DB: sb_user_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - userdb-data:/var/lib/postgresql/data
+    networks:
+      - sb-net
+
+
+volumes:
+  userdb-data:
+
+networks:
+  sb-net:
+    driver: bridge
+
+

@@ -1,1 +1,14 @@
-spring.application.name=user-microservice
+server:
+  port: 8090
+spring:
+  application:
+    name: user-microservice
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sb_user_db
+    username: user
+    password: pass
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
