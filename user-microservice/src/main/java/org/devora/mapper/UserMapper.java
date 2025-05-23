@@ -1,23 +1,86 @@
 package org.devora.mapper;
 
-import org.devora.dto.SignUpRequest;
-import org.devora.dto.UserResponse;
-import org.devora.enums.Language;
+import lombok.RequiredArgsConstructor;
+import org.devora.dto.CreateUserDto;
+import org.devora.dto.UpdateUserDto;
+import org.devora.dto.UserDetailsDto;
 import org.devora.model.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
+import java.util.List;
 
-   User toEntity(SignUpRequest request);
+@Component
+@RequiredArgsConstructor
+public class UserMapper {
 
-   @Mapping(source = "language", target = "language", qualifiedByName = "mapLangToTitle")
-   UserResponse toDto(User user);
+    private final SocialLinkMapper socialLinkMapper;
 
-   @Named("mapLangToTitle")
-   default String mapLangToTitle(Language language) {
-      return language != null ? language.getLabel() : null;
-   }
+    public UserDetailsDto toDto(User entity) {
+        return UserDetailsDto.builder()
+                .id(entity.getId())
+                .firstName(entity.getFirstName())
+                .lastName(entity.getLastName())
+                .email(entity.getEmail())
+                .username(entity.getUsername())
+                .password(entity.getPassword())
+                .role(entity.getRole())
+                .headline(entity.getHeadline())
+                .description(entity.getDescription())
+                .language(entity.getLanguage())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .links(entity.getLinks() != null
+                        ? entity.getLinks().stream()
+                        .map(socialLinkMapper::toDto)
+                        .toList()
+                        : List.of()
+                )
+                .build();
+    }
+
+    public User toEntity(CreateUserDto dto) {
+        return User.builder()
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .username(dto.username())
+                .password(dto.password())
+                .build();
+    }
+
+    public void fromDto(UpdateUserDto request, User user) {
+        if (request.firstName() != null) {
+            user.setFirstName(request.firstName());
+        }
+
+        if (request.lastName() != null) {
+            user.setLastName(request.lastName());
+        }
+
+        if (request.headline() != null) {
+            user.setHeadline(request.headline());
+        }
+
+        if (request.description() != null) {
+            user.setDescription(request.description());
+        }
+
+        if (request.language() != null) {
+            user.setLanguage(request.language());
+        }
+
+        if (request.links() != null) {
+            user.getLinks().clear();
+
+            var newLinks = request.links().stream()
+                    .map(linkDto -> {
+                        var link = socialLinkMapper.toEntity(linkDto);
+                        link.setUser(user);
+                        return link;
+                    })
+                    .toList();
+
+            user.getLinks().addAll(newLinks);
+        }
+    }
 }

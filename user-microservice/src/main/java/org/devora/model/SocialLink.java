@@ -1,21 +1,19 @@
 package org.devora.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.devora.enums.LinkType;
+import lombok.*;
+import org.devora.enums.SocialLinkType;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "user_links")
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLink {
+public class SocialLink {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,7 +21,7 @@ public class UserLink {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LinkType type;
+    private SocialLinkType type;
 
     @Column(nullable = false)
     private String url;
